@@ -1,22 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QuickChat Pro</title>
+  <title>QuickChat</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>QuickChat Pro 💬</h2>
+<div class="app">
 
-<input id="username" placeholder="Enter name">
-<button onclick="join()">Join</button>
+  <!-- LEFT: USERS -->
+  <div class="sidebar">
+    <h3>Chats</h3>
+    <input id="username" placeholder="Your name">
+    <button onclick="join()">Join</button>
 
-<h3>Users</h3>
-<div id="users"></div>
+    <div id="users"></div>
+  </div>
 
-<div id="messages" class="messages"></div>
+  <!-- RIGHT: CHAT -->
+  <div class="chat">
 
-<input id="messageInput" placeholder="Type and press Enter">
+    <div class="chat-header" id="chatHeader">
+      Select a user
+    </div>
+
+    <div id="messages" class="messages"></div>
+
+    <div class="input-area">
+      <input id="messageInput" placeholder="Type message">
+    </div>
+
+  </div>
+
+</div>
 
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="app.js"></script>
