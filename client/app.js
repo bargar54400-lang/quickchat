@@ -8,33 +8,47 @@ function join() {
   socket.emit("join", username);
 }
 
-// Send message
+// SEND MESSAGE (ENTER)
 document.getElementById("messageInput").addEventListener("keypress", (e) => {
   if (e.key === "Enter" && selectedUser) {
+    const msg = e.target.value;
+
+    const msgDiv = addMessage(msg, "sent", "✔");
+
     socket.emit("private-message", {
       to: selectedUser,
-      message: e.target.value
+      message: msg
     });
+
     e.target.value = "";
+
+    // update to delivered after server response
+    socket.on("delivered", () => {
+      msgDiv.querySelector(".meta").innerText = "✔✔";
+    });
   }
 });
 
-// Receive message
-socket.on("receive-message", (data) => {
+// ADD MESSAGE UI
+function addMessage(msg, type, status = "") {
   const div = document.createElement("div");
-  div.innerText = `${data.from}: ${data.message}`;
+  div.classList.add("message", type);
+
+  div.innerHTML = `
+    <div>${msg}</div>
+    <div class="meta">${status}</div>
+  `;
+
   document.getElementById("messages").appendChild(div);
+  return div;
+}
+
+// RECEIVE MESSAGE
+socket.on("receive-message", (data) => {
+  addMessage(data.message, "received");
 });
 
-// Typing
-socket.on("typing", (user) => {
-  document.getElementById("typing").innerText = user + " is typing...";
-  setTimeout(() => {
-    document.getElementById("typing").innerText = "";
-  }, 1000);
-});
-
-// Online users
+// ONLINE USERS
 socket.on("online-users", (users) => {
   const list = document.getElementById("users");
   list.innerHTML = "";

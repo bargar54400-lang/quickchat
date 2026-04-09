@@ -1,23 +1,3 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const cors = require("cors");
-
-const app = express();
-app.use(cors());
-
-const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
-
-let users = {};
-
-app.get("/", (req, res) => {
-  res.send("QuickChat Pro Running 🚀");
-});
-
 io.on("connection", (socket) => {
 
   socket.on("join", (username) => {
@@ -28,12 +8,12 @@ io.on("connection", (socket) => {
   socket.on("private-message", ({ to, message }) => {
     socket.to(to).emit("receive-message", {
       message,
-      from: users[socket.id]
+      from: users[socket.id],
+      senderId: socket.id
     });
-  });
 
-  socket.on("typing", (to) => {
-    socket.to(to).emit("typing", users[socket.id]);
+    // delivered tick
+    socket.emit("delivered");
   });
 
   socket.on("disconnect", () => {
@@ -42,6 +22,3 @@ io.on("connection", (socket) => {
   });
 
 });
-
-const PORT = process.env.PORT || 5000;
-server.listen(PORT);
