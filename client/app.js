@@ -1,4 +1,4 @@
-const socket = io("https://your-render-url.onrender.com");
+const socket = io("https://quickchat-server-hap7.onrender.com");
 
 let username = "";
 let selectedUser = null;
