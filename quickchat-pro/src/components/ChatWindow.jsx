@@ -1,31 +1,24 @@
-import React, { useEffect, useRef } from "react";
-import MessageBubble from "./MessageBubble";
+import React, { useRef, useEffect } from "react";
 import InputBar from "./InputBar";
 
-export default function ChatWindow({ chat, onSend }) {
+export default function ChatWindow({ messages, onSend }) {
   const endRef = useRef();
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat]);
-
-  if (!chat) return <div className="chat">Select chat</div>;
+  }, [messages]);
 
   return (
     <div className="chat">
 
-      <div className="chat-header">
-        <img src={chat.avatar} alt="" />
-        <div>
-          <b>{chat.name}</b>
-          <p>last seen today</p>
-        </div>
-        <div>📹 🔍 ⋮</div>
-      </div>
-
       <div className="messages">
-        {chat.messages.map((msg, i) => (
-          <MessageBubble key={i} msg={msg} />
+        {messages.map((msg, i) => (
+          <div key={i} className={msg.type}>
+            <div className="bubble">
+              {msg.text}
+              <div className="meta">{msg.time}</div>
+            </div>
+          </div>
         ))}
         <div ref={endRef}></div>
       </div>

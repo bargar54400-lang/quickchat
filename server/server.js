@@ -9,38 +9,37 @@ app.use(cors());
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: {
-    origin: "*"
-  }
+  cors: { origin: "*" }
 });
 
-let users = {};
+let users = {}; // socket.id => username
 
-// TEST ROUTE
 app.get("/", (req, res) => {
-  res.send("QuickChat Server Running 🚀");
+  res.send("Private Chat Server Running 🚀");
 });
 
-// SOCKET
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
+  console.log("Connected:", socket.id);
 
   // JOIN
   socket.on("join", (username) => {
     users[socket.id] = username;
-    console.log(username, "joined");
 
+    // send full user list
     io.emit("online-users", users);
   });
 
-  // SEND MESSAGE (BROADCAST VERSION 🔥)
-  socket.on("private-message", ({ message }) => {
-    io.emit("receive-message", {
+  // PRIVATE MESSAGE 🔥
+  socket.on("private-message", ({ to, message }) => {
+
+    // send to receiver
+    socket.to(to).emit("receive-message", {
       message,
-      from: users[socket.id]
+      from: users[socket.id],
+      senderId: socket.id
     });
 
-    // delivered tick
+    // sender gets delivered
     socket.emit("delivered");
 
     // simulate seen
@@ -51,7 +50,6 @@ io.on("connection", (socket) => {
 
   // DISCONNECT
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
     delete users[socket.id];
     io.emit("online-users", users);
   });
@@ -60,5 +58,5 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+  console.log("Server running on", PORT);
 });

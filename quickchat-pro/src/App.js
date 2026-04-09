@@ -1,73 +1,75 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import ChatWindow from "./components/ChatWindow";
-import { chatsData } from "./data";
 import "./App.css";
 import { io } from "socket.io-client";
 
 const socket = io("https://quickchat-server-hap7.onrender.com");
 
 function App() {
-  const [chats, setChats] = useState(chatsData);
-  const [activeChat, setActiveChat] = useState(null);
+  const [users, setUsers] = useState({});
   const [username, setUsername] = useState("User" + Math.floor(Math.random()*1000));
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [messages, setMessages] = useState({});
+  const [lastMsgDiv, setLastMsgDiv] = useState(null);
 
   // JOIN
   useEffect(() => {
     socket.emit("join", username);
   }, [username]);
 
-  // RECEIVE MESSAGE
+  // ONLINE USERS
+  useEffect(() => {
+    socket.on("online-users", (usersList) => {
+      setUsers(usersList);
+    });
+  }, []);
+
+  // RECEIVE
   useEffect(() => {
     socket.on("receive-message", (data) => {
-      const updated = chats.map(chat => {
-        if (chat.name === data.from) {
-          chat.messages.push({
-            text: data.message,
-            type: "received",
-            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-            status: "✓✓"
-          });
-        }
-        return chat;
-      });
-
-      setChats([...updated]);
+      setMessages(prev => ({
+        ...prev,
+        [data.from]: [...(prev[data.from] || []), {
+          text: data.message,
+          type: "received",
+          time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+        }]
+      }));
     });
-  }, [chats]);
+  }, []);
 
   // SEND
   const sendMessage = (text) => {
-    if (!activeChat) return;
+    if (!selectedUser) return;
 
     socket.emit("private-message", {
-      to: activeChat.socketId,
+      to: selectedUser,
       message: text
     });
 
-    const updated = chats.map(chat => {
-      if (chat.id === activeChat.id) {
-        chat.messages.push({
-          text,
-          type: "sent",
-          time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-          status: "✓"
-        });
-      }
-      return chat;
-    });
-
-    setChats([...updated]);
+    setMessages(prev => ({
+      ...prev,
+      [selectedUser]: [...(prev[selectedUser] || []), {
+        text,
+        type: "sent",
+        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        status: "✔"
+      }]
+    }));
   };
 
   return (
     <div className="app">
       <Sidebar
-        chats={chats}
-        activeChat={activeChat}
-        onSelect={setActiveChat}
+        users={users}
+        onSelect={setSelectedUser}
+        currentUser={username}
       />
-      <ChatWindow chat={activeChat} onSend={sendMessage} />
+      <ChatWindow
+        messages={messages[selectedUser] || []}
+        onSend={sendMessage}
+      />
     </div>
   );
 }
