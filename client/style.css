@@ -1,82 +1,136 @@
+/* RESET */
 body {
   margin: 0;
-  font-family: Arial;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #e5ddd5;
 }
 
+/* APP LAYOUT */
 .app {
   display: flex;
   height: 100vh;
+  overflow: hidden;
 }
 
-/* Sidebar */
+/* SIDEBAR */
 .sidebar {
   width: 30%;
   background: #111b21;
   color: white;
+  display: flex;
+  flex-direction: column;
   padding: 10px;
 }
 
-.sidebar input, .sidebar button {
+.sidebar input,
+.sidebar button {
   width: 100%;
-  margin-top: 5px;
+  margin-top: 6px;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
 }
 
-/* Users */
+/* USERS LIST */
+#users {
+  margin-top: 10px;
+  overflow-y: auto;
+  flex: 1;
+}
+
 #users div {
-  padding: 10px;
-  border-bottom: 1px solid #333;
+  padding: 12px;
+  border-bottom: 1px solid #222;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 #users div:hover {
   background: #2a3942;
 }
 
-/* Chat */
+/* ACTIVE USER 🔥 */
+.user-item.active {
+  background: #2a3942;
+}
+
+/* CHAT AREA */
 .chat {
   width: 70%;
   display: flex;
   flex-direction: column;
-  background: #ece5dd;
+  background: #efeae2;
 }
 
+/* HEADER */
 .chat-header {
   background: #075e54;
   color: white;
-  padding: 10px;
+  padding: 12px;
+  font-weight: bold;
 }
 
-/* Messages */
+/* MESSAGES CONTAINER */
 .messages {
   flex: 1;
   overflow-y: auto;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Bubble */
+/* MESSAGE ROW */
 .message {
-  max-width: 60%;
-  padding: 8px;
-  margin: 5px;
+  display: flex;
+  align-items: flex-end;
+  margin: 6px 10px;
+}
+
+/* SENT (RIGHT) */
+.message.sent {
+  justify-content: flex-end;
+}
+
+/* RECEIVED (LEFT) */
+.message.received {
+  justify-content: flex-start;
+}
+
+/* BUBBLE */
+.bubble {
+  padding: 8px 12px;
   border-radius: 10px;
+  max-width: 60%;
+  font-size: 14px;
+  word-wrap: break-word;
 }
 
-.sent {
-  background: #dcf8c6;
-  margin-left: auto;
+/* SENT STYLE */
+.message.sent .bubble {
+  background: #d9fdd3;
 }
 
-.received {
-  background: white;
-  margin-right: auto;
+/* RECEIVED STYLE */
+.message.received .bubble {
+  background: #ffffff;
 }
 
+/* META (✔✔) */
 .meta {
   font-size: 10px;
   color: gray;
+  margin-left: 5px;
 }
 
-/* Input */
+/* AVATAR */
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* INPUT AREA */
 .input-area {
   padding: 10px;
   background: #f0f0f0;
@@ -85,15 +139,37 @@ body {
 .input-area input {
   width: 100%;
   padding: 10px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
 }
 
-/* Mobile */
+/* SCROLLBAR (nice look 🔥) */
+.messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 10px;
+}
+
+/* MOBILE RESPONSIVE */
 @media (max-width: 600px) {
   .app {
     flex-direction: column;
   }
 
-  .sidebar, .chat {
+  .sidebar,
+  .chat {
     width: 100%;
+  }
+
+  .sidebar {
+    height: 40%;
+  }
+
+  .chat {
+    height: 60%;
   }
 }

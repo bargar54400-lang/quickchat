@@ -1,8 +1,18 @@
 const socket = io("https://quickchat-server-hap7.onrender.com");
 
+// STATE
 let username = "";
 let selectedUser = null;
 let lastMsgDiv = null;
+
+// DOM CACHE (IMPORTANT 🔥)
+const profileNameInput = document.getElementById("profileName");
+const profileImageInput = document.getElementById("profileImage");
+const previewImg = document.getElementById("preview");
+const usersList = document.getElementById("users");
+const chatHeader = document.getElementById("chatHeader");
+const messageInput = document.getElementById("messageInput");
+const messagesContainer = document.getElementById("messages");
 
 // LOAD PROFILE
 window.onload = () => {
@@ -10,27 +20,30 @@ window.onload = () => {
   const savedImage = localStorage.getItem("profileImage");
 
   if (savedName) {
-    document.getElementById("profileName").value = savedName;
+    profileNameInput.value = savedName;
     username = savedName;
   }
 
   if (savedImage) {
-    document.getElementById("preview").src = savedImage;
+    previewImg.src = savedImage;
   }
 };
 
 // SAVE PROFILE
 function saveProfile() {
-  const name = document.getElementById("profileName").value;
-  const file = document.getElementById("profileImage").files[0];
+  const name = profileNameInput.value.trim();
+  const file = profileImageInput.files[0];
+
+  if (!name) return alert("Enter your name");
 
   localStorage.setItem("username", name);
+  username = name;
 
   if (file) {
     const reader = new FileReader();
-    reader.onload = function () {
+    reader.onload = () => {
       localStorage.setItem("profileImage", reader.result);
-      document.getElementById("preview").src = reader.result;
+      previewImg.src = reader.result;
     };
     reader.readAsDataURL(file);
   }
@@ -38,81 +51,106 @@ function saveProfile() {
 
 // JOIN
 function join() {
-  username = localStorage.getItem("username") || document.getElementById("username").value;
+  username =
+    localStorage.getItem("username") ||
+    document.getElementById("username").value.trim();
+
+  if (!username) return alert("Enter username first");
+
   socket.emit("join", username);
 }
 
-// USERS
+// USERS LIST
 socket.on("online-users", (users) => {
-  const list = document.getElementById("users");
-  list.innerHTML = "";
+  usersList.innerHTML = "";
 
-  Object.keys(users).forEach(id => {
-    if (users[id] !== username) {
-      const div = document.createElement("div");
-      div.innerText = users[id];
+  Object.entries(users).forEach(([id, name]) => {
+    if (name === username) return;
 
-      div.onclick = () => {
-        selectedUser = id;
-        document.getElementById("chatHeader").innerText = users[id];
-      };
+    const div = document.createElement("div");
+    div.classList.add("user-item");
+    div.innerText = name;
 
-      list.appendChild(div);
-    }
+    div.onclick = () => {
+      selectedUser = id;
+      chatHeader.innerText = name;
+
+      // highlight selected user
+      document
+        .querySelectorAll(".user-item")
+        .forEach(el => el.classList.remove("active"));
+      div.classList.add("active");
+    };
+
+    usersList.appendChild(div);
   });
 });
 
 // SEND MESSAGE
-document.getElementById("messageInput").addEventListener("keypress", (e) => {
-  if (e.key === "Enter" && selectedUser) {
-    const msg = e.target.value;
+messageInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const msg = messageInput.value.trim();
+
+    if (!msg || !selectedUser) return;
 
     lastMsgDiv = addMessage(msg, "sent", "✔");
 
     socket.emit("private-message", {
       to: selectedUser,
-      message: msg
+      message: msg,
     });
 
-    e.target.value = "";
+    messageInput.value = "";
   }
 });
 
-// RECEIVE
+// RECEIVE MESSAGE
 socket.on("receive-message", (data) => {
   addMessage(data.message, "received");
+  scrollToBottom();
 });
 
 // DELIVERED
 socket.on("delivered", () => {
-  if (lastMsgDiv)
-    lastMsgDiv.querySelector(".meta").innerText = "✔✔";
+  if (lastMsgDiv) {
+    const meta = lastMsgDiv.querySelector(".meta");
+    if (meta) meta.innerText = "✔✔";
+  }
 });
 
 // SEEN
 socket.on("seen", () => {
-  if (lastMsgDiv)
-    lastMsgDiv.querySelector(".meta").innerText = "✔✔ Seen";
+  if (lastMsgDiv) {
+    const meta = lastMsgDiv.querySelector(".meta");
+    if (meta) meta.innerText = "✔✔ Seen";
+  }
 });
 
 // ADD MESSAGE
 function addMessage(msg, type, status = "") {
   const div = document.createElement("div");
-  div.classList.add("message", type);
+  div.className = `message ${type}`;
 
   const profileImage = localStorage.getItem("profileImage");
 
   let img = "";
   if (type === "sent" && profileImage) {
-    img = `<img src="${profileImage}" width="30" style="border-radius:50%">`;
+    img = `<img src="${profileImage}" class="avatar">`;
   }
 
   div.innerHTML = `
     ${img}
-    <div>${msg}</div>
+    <div class="bubble">${msg}</div>
     <div class="meta">${status}</div>
   `;
 
-  document.getElementById("messages").appendChild(div);
+  messagesContainer.appendChild(div);
+  scrollToBottom();
+
   return div;
+}
+
+// AUTO SCROLL 🔥
+function scrollToBottom() {
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }

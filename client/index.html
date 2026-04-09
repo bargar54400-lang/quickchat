@@ -2,51 +2,69 @@
 <html>
 <head>
   <title>QuickChat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="app">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <h3>Chats</h3>
 
-    <input id="username" placeholder="Your name">
-    <button onclick="join()">Join</button>
+    <!-- TOP -->
+    <div class="sidebar-top">
+      <h2>QuickChat</h2>
+    </div>
+
+    <!-- JOIN -->
+    <div class="join-box">
+      <input id="username" placeholder="Enter your name">
+      <button onclick="join()">Join Chat</button>
+    </div>
 
     <!-- PROFILE -->
-    <h3>My Profile</h3>
+    <div class="profile-box">
+      <h4>My Profile</h4>
+      <input id="profileName" placeholder="Your name">
+      <input type="file" id="profileImage">
+      <button onclick="saveProfile()">Save Profile</button>
 
-    <input id="profileName" placeholder="Your name">
-    <input type="file" id="profileImage">
-    <button onclick="saveProfile()">Save</button>
-
-    <img id="preview" width="60" style="border-radius:50%; margin-top:10px;">
+      <img id="preview">
+    </div>
 
     <hr>
 
-    <div id="users"></div>
+    <!-- USERS -->
+    <div id="users" class="users-list"></div>
+
   </div>
 
   <!-- CHAT -->
   <div class="chat">
 
+    <!-- HEADER -->
     <div class="chat-header" id="chatHeader">
-      Select a user
+      Select a user to start chatting
     </div>
 
+    <!-- MESSAGES -->
     <div id="messages" class="messages"></div>
 
+    <!-- INPUT -->
     <div class="input-area">
-      <input id="messageInput" placeholder="Type message and press Enter">
+      <input id="messageInput" placeholder="Type a message...">
     </div>
 
   </div>
 
 </div>
 
+<!-- SOCKET -->
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<!-- MAIN JS -->
 <script src="app.js"></script>
 
 </body>
