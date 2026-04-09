@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QuickChat</title>
-  <link rel="stylesheet" href="style.css">
+  <title>QuickChat Pro</title>
 </head>
 <body>
 
-<div class="chat">
-  <h2>QuickChat</h2>
+<h2>QuickChat Pro</h2>
 
-  <input id="messageInput" placeholder="Type message..." />
-  <div id="messages"></div>
+<input id="username" placeholder="Enter name">
+<button onclick="join()">Join</button>
 
-</div>
+<h3>Online Users</h3>
+<div id="users"></div>
+
+<div id="messages"></div>
+<div id="typing"></div>
+
+<input id="messageInput" placeholder="Type message">
 
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="app.js"></script>
