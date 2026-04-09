@@ -3,7 +3,6 @@ body {
   font-family: Arial;
 }
 
-/* Layout */
 .app {
   display: flex;
   height: 100vh;
@@ -22,7 +21,7 @@ body {
   margin-top: 5px;
 }
 
-/* User list */
+/* Users */
 #users div {
   padding: 10px;
   border-bottom: 1px solid #333;
@@ -33,7 +32,7 @@ body {
   background: #2a3942;
 }
 
-/* Chat area */
+/* Chat */
 .chat {
   width: 70%;
   display: flex;
@@ -41,7 +40,6 @@ body {
   background: #ece5dd;
 }
 
-/* Header */
 .chat-header {
   background: #075e54;
   color: white;
@@ -55,7 +53,7 @@ body {
   padding: 10px;
 }
 
-/* Message bubble */
+/* Bubble */
 .message {
   max-width: 60%;
   padding: 8px;
@@ -73,6 +71,11 @@ body {
   margin-right: auto;
 }
 
+.meta {
+  font-size: 10px;
+  color: gray;
+}
+
 /* Input */
 .input-area {
   padding: 10px;
@@ -82,4 +85,15 @@ body {
 .input-area input {
   width: 100%;
   padding: 10px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .sidebar, .chat {
+    width: 100%;
+  }
 }

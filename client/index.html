@@ -8,16 +8,28 @@
 
 <div class="app">
 
-  <!-- LEFT: USERS -->
+  <!-- SIDEBAR -->
   <div class="sidebar">
     <h3>Chats</h3>
+
     <input id="username" placeholder="Your name">
     <button onclick="join()">Join</button>
+
+    <!-- PROFILE -->
+    <h3>My Profile</h3>
+
+    <input id="profileName" placeholder="Your name">
+    <input type="file" id="profileImage">
+    <button onclick="saveProfile()">Save</button>
+
+    <img id="preview" width="60" style="border-radius:50%; margin-top:10px;">
+
+    <hr>
 
     <div id="users"></div>
   </div>
 
-  <!-- RIGHT: CHAT -->
+  <!-- CHAT -->
   <div class="chat">
 
     <div class="chat-header" id="chatHeader">
@@ -27,7 +39,7 @@
     <div id="messages" class="messages"></div>
 
     <div class="input-area">
-      <input id="messageInput" placeholder="Type message">
+      <input id="messageInput" placeholder="Type message and press Enter">
     </div>
 
   </div>
